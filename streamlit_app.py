@@ -7,30 +7,42 @@ st.set_page_config(page_title="Parkinson's AI Diagnostic Tool", layout="wide")
 st.title("🩺 Parkinson's Clinical Predictor (Automated)")
 st.write("Status: MODEL READY FOR CLINICAL PILOT | 2025 PROTOCOL")
 
-# --- SIDEBAR: PATIENT BACKGROUND ---
+# --- SIDEBAR: PATIENT BACKGROUND (Converted to Dropdowns) ---
 st.sidebar.header("Patient Background")
-family_hx = st.sidebar.checkbox("Family History of Parkinson's")
-depression = st.sidebar.checkbox("History of Clinical Depression")
 
-# --- MAIN PANEL: CLINICAL INPUTS ---
+family_hx_choice = st.sidebar.selectbox("Family History of Parkinson's", ["No", "Yes"])
+family_hx = True if family_hx_choice == "Yes" else False
+
+depression_choice = st.sidebar.selectbox("History of Clinical Depression", ["No", "Yes"])
+depression = True if depression_choice == "Yes" else False
+
+# --- MAIN PANEL: CLINICAL INPUTS (Converted to Dropdowns) ---
 st.header("Assessments (Primary Diagnostic Drivers)")
 col1, col2 = st.columns(2)
 
 with col1:
-    updrs = st.number_input("UPDRS Score (Scale 0-200)", 0, 200, 85)
-    moca = st.number_input("MoCA Score (Scale 0-30)", 0, 30, 12)
+    # Creating a list of numbers from 0 to 200 for UPDRS
+    updrs_options = list(range(0, 201))
+    updrs = st.selectbox("UPDRS Score (Scale 0-200)", options=updrs_options, index=85)
+
+    # Creating a list of numbers from 0 to 30 for MoCA
+    moca_options = list(range(0, 31))
+    moca = st.selectbox("MoCA Score (Scale 0-30)", options=moca_options, index=12)
 
 with col2:
-    tremor = st.slider("Tremor Severity (0-10)", 0, 10, 7)
-    rigidity = st.slider("Rigidity Score (0-10)", 0, 10, 4)
+    # Creating a list for Tremor 0-10
+    tremor_options = list(range(0, 11))
+    tremor = st.selectbox("Tremor Severity (0-10)", options=tremor_options, index=7)
 
-# --- PREDICTION LOGIC (Based on Study Weights) ---
+    # Creating a list for Rigidity 0-10
+    rigidity_options = list(range(0, 11))
+    rigidity = st.selectbox("Rigidity Score (0-10)", options=rigidity_options, index=3)
+
+# --- PREDICTION LOGIC (Remains the same) ---
 st.divider()
 
-# High-risk threshold from Finding #4
 is_high_priority = updrs > 80 and moca < 15
 
-# Calculated Risk Probability
 base_prob = (updrs/200 * 0.439) + ((30-moca)/30 * 0.154) + (tremor/10 * 0.149)
 if family_hx: base_prob += 0.10
 if depression: base_prob += 0.08
